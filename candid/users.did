@@ -1,0 +1,38 @@
+type ApiError = variant {
+  NotFound : text;
+  Unauthorized : text;
+  AlreadyExists : text;
+  CanisterFailed : CanisterFailedError;
+};
+type CanisterFailedError = record { code : RejectionCode; message : text };
+type RejectionCode = variant {
+  NoError;
+  CanisterError;
+  SysTransient;
+  DestinationInvalid;
+  Unknown;
+  SysFatal;
+  CanisterReject;
+};
+type Result = variant { Ok : User; Err : ApiError };
+type Result_1 = variant {
+  Ok : vec record { principal; vec principal };
+  Err : ApiError;
+};
+type Result_2 = variant { Ok : vec User; Err : ApiError };
+type Result_3 = variant { Ok : vec record { principal; User }; Err : ApiError };
+type User = record {
+  username : opt text;
+  created_at : nat64;
+  user_id : principal;
+  canisters : vec principal;
+  alias_user_ids : opt vec principal;
+};
+service : {
+  create_user : (opt text) -> (Result);
+  get_all_chunk_canisters : () -> (Result_1) query;
+  get_all_users : () -> (Result_2) query;
+  get_chunks_wasm : () -> (vec nat8) query;
+  get_state : () -> (Result_3) query;
+  get_user : () -> (Result) query;
+}
